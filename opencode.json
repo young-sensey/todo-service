@@ -1,0 +1,30 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "agent": {
+    "build": {
+      "mode": "primary",
+      "tools": {
+        "write": true,
+        "edit": true,
+        "bash": true
+      }
+    },
+    "plan": {
+      "mode": "primary",
+      "tools": {
+        "write": false,
+        "edit": false,
+        "bash": false
+      }
+    },
+    "backend-architect": {
+      "description": "Следит за чистотой структуры проекта",
+      "mode": "subagent",
+      "prompt": "{file:./prompts/backend-architect.txt}",
+      "tools": {
+        "write": false,
+        "edit": false
+      }
+    }
+  }
+}

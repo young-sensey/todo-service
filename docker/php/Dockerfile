@@ -1,25 +1,32 @@
-FROM php:8.5-fpm-trixie
-RUN apt-get update && apt-get install -y \
-		libfreetype-dev \
-		libjpeg62-turbo-dev \
-		libpng-dev \
-        libzip-dev \
-        libpq-dev \
-        zip \
-        libxml2-dev \
-        libfcgi-bin \
-	&& docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql \
-	&& docker-php-ext-install -j$(nproc) gd \
-    && docker-php-ext-install zip \
-    && docker-php-ext-install pdo pdo_pgsql \
-    && docker-php-ext-install pcntl
+FROM php:8.5-fpm-alpine
 
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+RUN apk add --no-cache \
+    libpq-dev \
+    libjpeg-turbo-dev \
+    libpng-dev \
+    libwebp-dev \
+    freetype-dev \
+    libzip-dev \
+    zip \
+    unzip \
+    git \
+    curl \
+    $PHPIZE_DEPS
 
-RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && \
-    apt-get install -y nodejs
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
+    && docker-php-ext-install -j$(nproc) \
+        pdo_pgsql \
+        pgsql \
+        bcmath \
+        gd \
+        zip
+
+RUN pecl install redis \
+    && docker-php-ext-enable redis
+
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www
+COPY --chown=www-data:www-data ./app /var/www
 
-CMD bash -c "npm run dev & php-fpm"
+USER www-data

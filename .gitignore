@@ -1,0 +1,4 @@
+.idea
+.env
+docker/nginx/conf.d/default.conf
+docker/nginx/logs

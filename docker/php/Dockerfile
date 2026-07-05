@@ -27,6 +27,6 @@ RUN pecl install redis \
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www
-COPY --chown=www-data:www-data ./app /var/www
+COPY --chown=www-data:www-data . /var/www
 
 USER www-data
